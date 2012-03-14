@@ -3,3 +3,6 @@
 *.swp
 *.swo
 .svn
+research
+*.stx
+*.acp
