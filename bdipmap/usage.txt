@@ -6,7 +6,7 @@
 6. ./configure --enable-bdipmap
 7. make
 8. cp modules/bdipmap.so php-extension/
-9. vi php.in
+9. vi php.ini
 +[bdipmap]
 +extension=bdipmap.so
 +bdipmap.data_path = "./data/ip.map"
