@@ -1,0 +1,108 @@
+<style>
+#debug{
+    position: absolute;
+    border: 1px dashed red;
+    margin: 5px;
+    padding: 5px;
+}
+.sub-obj{
+    padding: 5px;
+    margin: 5px;
+    border: 1px dashed blue;
+    position: relative;
+    top: 5px;
+    left: 5px;
+}
+</style>
+<div id="debug"></div>
+<script type="text/javascript" src="/statics/js/jquery-1.4.2.js"></script>
+<script type="text/javascript">
+var t_array = [123, 456, 789, "I am string", 234, {"obj": "I am obj.", "two": {"json": "I am json.", "array-test": [5, 9]}}];
+//var t_array = [123, 456, 789, "I am string", 234];
+var t_obj   = {"name": "Jack", "sex": "M", "age": 22};
+
+function test(data){
+    var html = "";
+    //for(key in data){
+    //        if(typeof(key) == )
+    //}
+    var debug = $('#debug');
+    html = "array[3] = " + t_array[3] + "<br />";
+    html += "array length: " + t_array.length + "<br />";
+    html += "data type: " + typeof(t_array) + "<br />";
+    debug.html(html);
+}
+
+var debuger = {
+    _debug: function(data)
+    {
+        var html = '';
+
+        if ('string' == typeof(data) || 'number' == typeof(data))
+        {
+            return 'String OR Number: ' + data + '<br />';
+        }
+        else if ('boolean' == typeof(data))
+        {
+            return 'Boolean: ' + (data ? 'true' : 'false') + '<br />';
+        }
+        else if ('function' == typeof(data))
+        {
+            return 'It is a function.' + '<br />';
+        }
+        else if ('object' == typeof(data))
+        {
+            if ('undefined' == typeof(data.length))
+            {
+                var key;
+                html += 'It is a object .' + "<br />";
+                for (key in data)
+                {
+                    if ('object' == typeof(data[key]))
+                    {
+                        html += '<div class="sub-obj">' + debuger._debug(data[key]) + '</div>';
+                    }
+                    else
+                    {
+                        html += key + ': ' + data[key] + "<br />";    
+                    }
+                }
+
+                return html;
+            }
+            else
+            {
+                var len = data.length;
+                var tip = 'It is array.' + "<br />";
+                for (var i = 0; i < len; i++)
+                {
+                    if ('object' == typeof(data[i]))
+                    {
+                        html += i + ': <div class="sub-obj">' + debuger._debug(data[i]) + '</div>';
+                    }
+                    else
+                    {
+                        html += i + ': ' + data[i] + '<br />';    
+                    }
+                }
+                
+                return tip + html;
+            }
+        }
+        else
+        {
+            return 'It is undefined...';    
+        }
+    },
+
+    pr: function(data)
+    {
+        var html = this._debug(data);
+        $('#debug').html(html);
+    }
+}
+
+$(function(){
+    debuger.pr(t_obj);
+});
+</script>
