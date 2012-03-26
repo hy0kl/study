@@ -13,49 +13,42 @@
     top: 5px;
     left: 5px;
 }
+.title{
+    font-weight: bold;
+    font-size: 1.5em;
+}
 </style>
 <div id="debug"></div>
 <script type="text/javascript" src="/statics/js/jquery-1.4.2.js"></script>
 <script type="text/javascript">
 var t_array = [123, 456, 789, "I am string", 234, {"obj": "I am obj.", "two": {"json": "I am json.", "array-test": [5, 9]}}];
-//var t_array = [123, 456, 789, "I am string", 234];
 var t_obj   = {"name": "Jack", "sex": "M", "age": 22};
-
-function test(data){
-    var html = "";
-    //for(key in data){
-    //        if(typeof(key) == )
-    //}
-    var debug = $('#debug');
-    html = "array[3] = " + t_array[3] + "<br />";
-    html += "array length: " + t_array.length + "<br />";
-    html += "data type: " + typeof(t_array) + "<br />";
-    debug.html(html);
-}
-
+    
 var debuger = {
     _debug: function(data)
     {
         var html = '';
+        var title_tag = '<span class="title">';
+        var title_span= '</span>';
 
         if ('string' == typeof(data) || 'number' == typeof(data))
         {
-            return 'String OR Number: ' + data + '<br />';
+            return title_tag + 'String OR Number: ' + title_span + data + '<br />';
         }
         else if ('boolean' == typeof(data))
         {
-            return 'Boolean: ' + (data ? 'true' : 'false') + '<br />';
+            return title_tag + 'Boolean: ' + title_span + (data ? 'true' : 'false') + '<br />';
         }
         else if ('function' == typeof(data))
         {
-            return 'It is a function.' + '<br />';
+            return title_tag + 'It is a function.' + title_span + '<br />';
         }
         else if ('object' == typeof(data))
         {
             if ('undefined' == typeof(data.length))
             {
                 var key;
-                html += 'It is a object .' + "<br />";
+                html += title_tag + 'It is a object.' + title_span + "<br />";
                 for (key in data)
                 {
                     if ('object' == typeof(data[key]))
@@ -73,7 +66,7 @@ var debuger = {
             else
             {
                 var len = data.length;
-                var tip = 'It is array.' + "<br />";
+                var tip = title_tag + 'It is array.' + title_span + "<br />";
                 for (var i = 0; i < len; i++)
                 {
                     if ('object' == typeof(data[i]))
@@ -91,18 +84,19 @@ var debuger = {
         }
         else
         {
-            return 'It is undefined...';    
+            return title_tag + 'It is undefined...' + title_span;
         }
     },
 
     pr: function(data)
     {
         var html = this._debug(data);
-        $('#debug').html(html);
+        $('#debug').append(html);
     }
-}
+};
 
 $(function(){
     debuger.pr(t_obj);
+    debuger.pr(t_array);
 });
 </script>
