@@ -12,9 +12,9 @@
 
 #define DEBUG 1
 
-#define MAXLINE 10240
+#define MAXLINE  1024 
 #define OPEN_MAX 100
-#define LISTENQ 20
+#define LISTENQ  20
 #define SERV_PORT 5000
 #define INFTIM 1000
 
@@ -23,7 +23,7 @@
 #define HOSTNAME_LEN 256
 
 #define EVENTS_NUM 20
-#define EPOOL_FD 256
+#define EPOOL_FD 1024 
 #define EPOOL_TIMEOUT 100
 
 /**

@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
     unsigned char url[MAX_URL_LEN]="......?---陈毓端06/23/2009 北京.";
     char str[MAX_URL_LEN] = "http://www.google.com/mail";
 
+    char json_buf[1024] = {0};
+
     print_agrs(argc, argv);
 
     if (argc > 1 && 0 != argv[1][0])
@@ -126,6 +128,10 @@ int main(int argc, char *argv[])
     {
         printf("Can NOT find '/'.\n");    
     }
+
+    printf("json_buf befor copy is:[%s]\n", json_buf);
+    snprintf(json_buf, 1024, "");
+    printf("json_buf is:[%s]\n", json_buf);
 
     return 0;
 }

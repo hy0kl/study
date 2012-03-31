@@ -4,7 +4,7 @@
 
 #include <curl/curl.h>
 
-#define CACHE_NUM       2 
+#define CACHE_NUM       32 
 #define CURL_BUF_LEN    500 * 1024
 #define DEFAULT_LINK_LENGTH 1024
 
@@ -50,6 +50,10 @@ int curl_get_contents(const int index, const char *url, long time_out)
     CURL *curl_handle;
 
     curl_chunk *chunk = &(g_curl_chunk[index]);
+
+    /** init buffer */
+    chunk->size = 0;
+    memset(chunk->curl_body, 0, CURL_BUF_LEN);
 
     curl_global_init(CURL_GLOBAL_ALL);
 
@@ -105,7 +109,7 @@ int main(int argc, char *argv[])
             exit(-1);
         }
 
-        memset(g_curl_chunk[i].curl_body, 0, CURL_BUF_LEN);
+        //memset(g_curl_chunk[i].curl_body, 0, CURL_BUF_LEN);
 
         page = i * 10;
         snprintf(url, DEFAULT_LINK_LENGTH, BASE_URL, page);
