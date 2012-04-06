@@ -40,27 +40,27 @@ int cut_str(const char *src, char *des, const char *charset, int length, const c
             else if (194 <= t && t <= 223)
             {
                 tn = 2;
-                n   += 2;
+                n += 2;
             }
             else if (224 <= t && t < 239)
             {
                 tn = 3;
-                n   += 3;
+                n += 3;
             }
             else if (240 <= t && t <= 247)
             {
                 tn = 4;
-                n   += 4;
+                n += 4;
             }
             else if (248 <= t && t <= 251)
             {
                 tn = 5;
-                n   += 5;
+                n += 5;
             }
             else if (t == 252 || t == 253)
             {
                 tn = 6;
-                n   += 6;
+                n += 6;
             } else
             {
                 n++;
