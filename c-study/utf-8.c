@@ -12,7 +12,6 @@ int cut_str(const char *src, char *des, const char *charset, int length, const c
     unsigned int t  = 0;
     int n  = 0;
     int tn = 0;
-    int noc= 0;
 
     if (NULL == src || NULL == des || length <= 0)
     {
@@ -37,64 +36,56 @@ int cut_str(const char *src, char *des, const char *charset, int length, const c
             {
                 tn = 1;
                 n++;
-                noc++;
             }
             else if (194 <= t && t <= 223)
             {
                 tn = 2;
                 n   += 2;
-                noc += 2;
             }
             else if (224 <= t && t < 239)
             {
                 tn = 3;
                 n   += 3;
-                noc += 3;
             }
             else if (240 <= t && t <= 247)
             {
                 tn = 4;
                 n   += 4;
-                noc += 4;
             }
             else if (248 <= t && t <= 251)
             {
                 tn = 5;
                 n   += 5;
-                noc += 5;
             }
             else if (t == 252 || t == 253)
             {
                 tn = 6;
                 n   += 6;
-                noc += 6;
             } else
             {
                 n++;
             }
 
-            if(noc >= length)
+            if(n >= length)
             {
                 break;
             }
 
         }
 
-        if(noc > length)
+        if(n > length)
         {
             n -= tn;
         }
-        
+
         for (t = 0; t < n; t++)
         {
             des[t] = src[t];
         }
-
-        ret = t;
     }
     else
     {
-        for(n = 0; n < length - 1; n++) 
+        for(n = 0; n < length - 1; n++)
         {
             des[n] = src[n];
             t = (unsigned char)src[n];
@@ -105,8 +96,8 @@ int cut_str(const char *src, char *des, const char *charset, int length, const c
             }
         }
 
-        ret = n;
     }
+    ret = n;
 
     strncat(des, suffix, DEFAULT_TITLE_LENGTH - strlen(des) - 1);
     des[DEFAULT_TITLE_LENGTH - 1] = '\0';
