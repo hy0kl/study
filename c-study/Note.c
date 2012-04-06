@@ -126,3 +126,35 @@ clearerr(FILE *stream);
 DESCRIPTION
      The function clearerr() clears the end-of-file and error indicators for the stream pointed to by stream.
 
+12. 字符串连接
+char *
+strncat(char *restrict s1, const char *restrict s2, size_t n);
+     void
+     foo(const char *arbitrary_string)
+     {
+             char onstack[8] = "";
+
+     #if defined(BAD)
+             /*
+              * This first strcat is bad behavior.  Do not use strcat!
+              */
+             (void)strcat(onstack, arbitrary_string);        /* BAD! */
+     #elif defined(BETTER)
+             /*
+              * The following two lines demonstrate better use of
+              * strncat().
+              */
+             (void)strncat(onstack, arbitrary_string,
+                 sizeof(onstack) - strlen(onstack) - 1);
+     #elif defined(BEST)
+             /*
+              * These lines are even more robust due to testing for
+              * truncation.
+              */
+             if (strlen(arbitrary_string) + 1 >
+                 sizeof(onstack) - strlen(onstack))
+                     err(1, "onstack would be truncated");
+             (void)strncat(onstack, arbitrary_string,
+                 sizeof(onstack) - strlen(onstack) - 1);
+     #endif
+     }
