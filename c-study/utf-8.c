@@ -18,7 +18,7 @@ int cut_str(const char *src, char *des, const char *charset, int length, const c
         return -11;
     }
 
-    if (str_len == length && str_len < DEFAULT_TITLE_LENGTH)
+    if (str_len <= length && str_len < DEFAULT_TITLE_LENGTH)
     {
         memmove(des, src, str_len);
         des[DEFAULT_TITLE_LENGTH - 1] = '\0';
