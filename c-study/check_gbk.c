@@ -6,7 +6,6 @@
 #define STR_BUFF_SIZE 2048
 
 #define GBK_NUM     0x5e02  //24066
-
 #define GBK_1LO     0x81    //129
 #define GBK_1HI     0xfe    //254
 #define GBK_1NUM    0x7e    //126
