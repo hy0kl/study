@@ -48,7 +48,7 @@ char * str_replace(char *src, size_t buf_size, char *replace, char *subject)
     if (strlen(t_buf))
     {
         memmove(src, t_buf, buf_size - 1);
-        src[buf_size] = '\0';
+        src[buf_size - 1] = '\0';
     }
 
 FINISH:
