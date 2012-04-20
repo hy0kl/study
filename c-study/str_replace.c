@@ -16,13 +16,19 @@ char * str_replace(char *src, size_t buf_size, char *replace, char *subject)
 
     if ( NULL == src || buf_size <= 0 || NULL == replace || NULL == subject)
     {
-        return NULL;
+        goto FINISH;
     }
 
     s_len = strlen(subject);
 
     pcp = src;
     p   = strstr(src, subject);
+
+    if (NULL == p)
+    {
+        goto FINISH;
+    }
+
     while (NULL != p)
     {
         *p = '\0';
@@ -45,6 +51,7 @@ char * str_replace(char *src, size_t buf_size, char *replace, char *subject)
         src[buf_size] = '\0';
     }
 
+FINISH:
     return src;
 }
 
