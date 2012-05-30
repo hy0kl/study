@@ -30,5 +30,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "sizeof(int *pi) = %lu\n", sizeof(pi));
     fprintf(stderr, "sizeof(float *pf) = %lu\n", sizeof(pf));
 
+    fprintf(stderr, "sizeof(\"just\") = %lu\n", sizeof("just"));
+
     return 0;
 }
