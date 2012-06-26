@@ -16,4 +16,8 @@ vi test_bdipmap.php
 <?php
 echo dbipmap_debug('debug for test');
 echo 'get region by user ip: ' . bdipmap_search_map(123765); 
+
+$ip = '127.0.0.1';
+$ip_long = sprintf('%u', ip2long($ip));
+echo '(long int)' . $ip . ' = ' . $ip_long;
 ?>
