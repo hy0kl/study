@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     list = init_list(item_count);
     print_list(list);
 
-    //revert_list(list);
+    revert_list(list);
     //
 
     return 0;
