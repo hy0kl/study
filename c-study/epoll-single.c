@@ -9,10 +9,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
+#include <sys/time.h>
 
 #define DEBUG 1
 
-#define MAXLINE     1024
+#define MAXLINE     1024 * 100
 #define OPEN_MAX    100
 #define LISTENQ     20
 #define SERV_PORT   5000
@@ -49,9 +51,54 @@ void setnonblocking(int sock)
     }
 }
 
+int build_html(char *html_buf)
+{
+    int ret = 0;
+    char *p = html_buf;
+
+    struct tm* p_tm = NULL;
+    time_t tm = time(NULL);
+    p_tm = localtime(&tm);
+
+    if (NULL == p)
+    {
+        return ret;
+    }
+
+    html_buf[0] = '\0';
+
+    //HTTP头
+    p += snprintf(p, MAXLINE - (p - html_buf), "HTTP/1.1 200 OK\r\n\
+Content-Type: text/html; charset=UTF-8\r\n\
+Connection: closed\r\n\r\n\
+<html>\n<head>\n\
+<meta content=\"text/html; charset=UTF-8\" http-equiv=\"Content-Type\">\n\
+<style>\
+body{\
+background-color: rgb(229, 229, 229);\
+}\
+#main{\
+    margin: auto;\
+    width: 780px;\
+    padding: 5px;\
+    border: 1px dotted blue;\
+}\
+</style>\
+</head>\n\
+<body>\n\
+<div id=\"main\">\n\
+<H3>Connect stat</H3>\n\
+<div>Current Time: %d-%d-%d %d:%d:%d</div>\
+</div></body></html>\n", p_tm->tm_year + 1900, p_tm->tm_mon + 1, p_tm->tm_mday,
+    p_tm->tm_hour, p_tm->tm_min, p_tm->tm_sec);
+
+    return p - html_buf;
+}
+
 int main(int argc, char *argv[])
 {
     int i, maxi, listenfd, connfd, sockfd, epfd, nfds, portnumber;
+    int html_len = 0;
     ssize_t n;
     char line[MAXLINE] = {0};
     socklen_t clilen;
@@ -60,8 +107,6 @@ int main(int argc, char *argv[])
     char str[MAXLINE] = {0};
     char *html_buf[EPOOL_FD];
     char *p = NULL;
-    char *p_start = NULL;
-    int pos = 0;
 
     //pid_t pid;
 
@@ -263,29 +308,17 @@ int main(int argc, char *argv[])
             {
                 sockfd = events[i].data.fd;
 
-                p = html_buf[i];
-                p_start = p;
-                //memset(p, 0, MAXLINE);
-                *p_start = 0;
-
-                //HTTP头
-                p += snprintf(p, MAXLINE - (p - p_start), "HTTP/1.1 200 OK\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "Content-Type: text/html; charset=UTF-8\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "Connection: closed\r\n\r\n");
-
-                //页面
-                p += snprintf(p, MAXLINE - (p - p_start), "<html>\r\n<head>\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "<meta content=\"text/html; charset=UTF-8\" http-equiv=\"Content-Type\">\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "</head>\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "<body style=\"background-color: rgb(229, 229, 229);\">\r\n");
-
-                p += snprintf(p, MAXLINE - (p - p_start), "<center>\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "<H3>Connect stat</H3>\r\n");
-                p += snprintf(p, MAXLINE - (p - p_start), "</center></body></html>\r\n");
-
+                html_len = build_html(html_buf[i]);
 
                 //write(sockfd, line, n);
-                write(sockfd, p_start, p - p_start);
+                if (html_len)
+                {
+                    write(sockfd, html_buf[i], html_len);
+                }
+                else
+                {
+                    write(sockfd, "\n", 1);
+                }
                 fprintf(stderr, "Send data to client.\n");
 
                 close(sockfd);
