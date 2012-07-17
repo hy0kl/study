@@ -88,7 +88,7 @@ background-color: rgb(229, 229, 229);\
 <body>\n\
 <div id=\"main\">\n\
 <H3>Connect stat</H3>\n\
-<div>Current Time: %d-%d-%d %d:%d:%d</div>\
+<div>Current Time: %d-%02d-%02d %02d:%02d:%02d</div>\
 </div></body></html>\n", p_tm->tm_year + 1900, p_tm->tm_mon + 1, p_tm->tm_mday,
     p_tm->tm_hour, p_tm->tm_min, p_tm->tm_sec);
 
