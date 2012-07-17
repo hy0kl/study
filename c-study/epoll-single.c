@@ -12,22 +12,22 @@
 
 #define DEBUG 1
 
-#define MAXLINE  1024 
-#define OPEN_MAX 100
-#define LISTENQ  20
-#define SERV_PORT 5000
-#define INFTIM 1000
+#define MAXLINE     1024
+#define OPEN_MAX    100
+#define LISTENQ     20
+#define SERV_PORT   5000
+#define INFTIM      1000
 
-#define DEFAULT_PORT 8900
+#define DEFAULT_PORT 8989
 #define DEFAULT_HOST "127.0.0.1"
 #define HOSTNAME_LEN 256
 
-#define EVENTS_NUM 20
-#define EPOOL_FD 1024 
+#define EVENTS_NUM  20
+#define EPOOL_FD    1024 * 4
 #define EPOOL_TIMEOUT 100
 
 /**
- * gcc -g -o epool-server epoll-server-lx.c
+ * gcc -g -o epoll-server epoll-single.c
  * */
 
 void setnonblocking(int sock)
@@ -40,7 +40,7 @@ void setnonblocking(int sock)
         perror("fcntl(sock,GETFL)");
         exit(1);
     }
-    
+
     opts = opts | O_NONBLOCK;
     if(fcntl(sock, F_SETFL, opts) < 0)
     {
@@ -55,20 +55,23 @@ int main(int argc, char *argv[])
     ssize_t n;
     char line[MAXLINE] = {0};
     socklen_t clilen;
-    
+
     char local_addr[HOSTNAME_LEN] = DEFAULT_HOST;
     char str[MAXLINE] = {0};
-    char html_buf[EPOOL_FD][MAXLINE]= {0};
+    char *html_buf[EPOOL_FD];
     char *p = NULL;
     char *p_start = NULL;
     int pos = 0;
+
+    //pid_t pid;
 
     //声明epoll_event结构体的变量,ev用于注册事件,数组用于回传要处理的事件
     struct epoll_event ev, events[EPOOL_FD];
     struct sockaddr_in clientaddr;
     struct sockaddr_in serveraddr;
-    
-        
+
+    signal(SIGPIPE, SIG_IGN);
+
     if (argc > 1)
     {
         if( (portnumber = atoi(argv[1])) < 0 )
@@ -85,9 +88,40 @@ int main(int argc, char *argv[])
 
     if (-1 == gethostname(local_addr, HOSTNAME_LEN))
     {
-        fprintf(stderr, "Can NOT get host name, Use default host: %s\n", DEFAULT_HOST); 
+        fprintf(stderr, "Can NOT get host name, Use default host: %s\n", DEFAULT_HOST);
         snprintf(local_addr, HOSTNAME_LEN, "%s", DEFAULT_HOST);
     }
+
+    /** init buff*/
+    for (i = 0; i < EPOOL_FD; i++)
+    {
+        p = (char *)malloc(MAXLINE * sizeof(char));
+        if (NULL == p)
+        {
+            fprintf(stderr, "Can malloc memory for %d, size = %ld\n",
+                i, MAXLINE * sizeof(char));
+            exit(-1);
+        }
+
+        *(html_buf + i) = p;
+    }
+
+    /**
+    if ((pid = fork()) < 0)
+    {
+        fprintf(stderr, "fork fail, End at: %d\n", __LINE__);
+        exit(-1);
+    }
+    */
+
+    /** parent process */
+    /**
+    if (pid)
+    {
+        fprintf(stderr, "Parent process exit, at: %d\n", __LINE__);
+        exit(0);
+    }
+    */
 
     //生成用于处理accept的epoll专用的文件描述符
     epfd = epoll_create(EPOOL_FD);
@@ -108,7 +142,7 @@ int main(int argc, char *argv[])
 
     //设置与要处理的事件相关的文件描述符
     ev.data.fd = listenfd;
-    
+
     //设置要处理的事件类型
     ev.events = EPOLLIN | EPOLLET;
     //ev.events=EPOLLIN;
@@ -126,7 +160,7 @@ int main(int argc, char *argv[])
     }
 #endif
     bzero(&serveraddr, sizeof(serveraddr));
-    
+
     serveraddr.sin_family = AF_INET;
     inet_aton(local_addr, &(serveraddr.sin_addr));//htons(portnumber);
     serveraddr.sin_port = htons(portnumber);
@@ -152,13 +186,13 @@ int main(int argc, char *argv[])
     {
         printf("listen ip and port is success.\n");
     }
-#endif   
-    
+#endif
+
     maxi = 0;
     for ( ; ; ) {
         //等待epoll事件的发生
         nfds = epoll_wait(epfd, events, EVENTS_NUM, EPOOL_TIMEOUT);
-        
+
         //处理所发生的所有事件
         for(i = 0; i < nfds; ++i)
         {
@@ -176,7 +210,7 @@ int main(int argc, char *argv[])
 
                 snprintf(str, MAXLINE, "%s", inet_ntoa(clientaddr.sin_addr));
                 fprintf(stderr, "accapt a connection from: %s\n", str);
-                
+
                 //设置用于读操作的文件描述符
                 ev.data.fd = connfd;
                 //设置用于注测的读操作事件
@@ -193,7 +227,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "EPOLLIN read data\n");
                 if ( (sockfd = events[i].data.fd) < 0)
                     continue;
-                
+
                 if ( (n = read(sockfd, line, MAXLINE)) < 0)
                 {
                     if (errno == ECONNRESET)
@@ -216,7 +250,7 @@ int main(int argc, char *argv[])
                 line[n] = '\0';
                 //cout << "read " << line << endl;
                 fprintf(stderr, "Read: %s\n", line);
-                
+
                 //设置用于写操作的文件描述符
                 ev.data.fd = sockfd;
 
@@ -238,7 +272,7 @@ int main(int argc, char *argv[])
                 p += snprintf(p, MAXLINE - (p - p_start), "HTTP/1.1 200 OK\r\n");
                 p += snprintf(p, MAXLINE - (p - p_start), "Content-Type: text/html; charset=UTF-8\r\n");
                 p += snprintf(p, MAXLINE - (p - p_start), "Connection: closed\r\n\r\n");
-                
+
                 //页面
                 p += snprintf(p, MAXLINE - (p - p_start), "<html>\r\n<head>\r\n");
                 p += snprintf(p, MAXLINE - (p - p_start), "<meta content=\"text/html; charset=UTF-8\" http-equiv=\"Content-Type\">\r\n");
@@ -249,11 +283,11 @@ int main(int argc, char *argv[])
                 p += snprintf(p, MAXLINE - (p - p_start), "<H3>Connect stat</H3>\r\n");
                 p += snprintf(p, MAXLINE - (p - p_start), "</center></body></html>\r\n");
 
-                
+
                 //write(sockfd, line, n);
                 write(sockfd, p_start, p - p_start);
                 fprintf(stderr, "Send data to client.\n");
-               
+
                 close(sockfd);
 
                 //设置用于读操作的文件描述符
@@ -261,7 +295,7 @@ int main(int argc, char *argv[])
 
                 //设置用于注测的读操作事件
                 ev.events = EPOLLIN|EPOLLET;
-                
+
                 //修改sockfd上要处理的事件为EPOLIN
                 epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
             }
