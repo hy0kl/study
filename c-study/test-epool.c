@@ -11,7 +11,7 @@
 #include <sys/wait.h>
 
 
-#define PORT        6868 
+#define PORT        6868
 #define BACKLOG     100
 #define BUF_EV_LEN  150
 #define MAX_EPOLL_FD 8000
@@ -32,12 +32,12 @@ int main(int argc, char *argv[])
 {
     signal(SIGPIPE, SIG_IGN);
     /**/pid_t pid;
- 
+
     if((pid = fork()) < 0){
         printf("End at: %d",__LINE__);
         exit(-1);
     }
- 
+
     if (pid){
         printf("End at: %d",__LINE__);
         exit(0);
@@ -52,24 +52,24 @@ int run()
     int epoll_fd;
     int nfds;
     int i;
-    
+
     struct epoll_event events[BUF_EV_LEN];
     struct epoll_event tempEvent;
-    
+
     int sockConnect;
     struct sockaddr_in remoteAddr;
     int addrLen;
-    
+
     addrLen = sizeof(struct sockaddr_in);
     epoll_fd = InitEpollFd();
-    
+
     if (epoll_fd == -1)
     {
         printf("End at: %d,", __LINE__);
         perror("init epoll fd error.");
         exit(1);
     }
-    
+
     printf("begin in loop.\n");
     while (1)
     {
@@ -129,15 +129,15 @@ int CreateTcpListenSocket()
         perror("create socket fail");
         return -1;
     }
-    
+
     setnonblocking(sockfd);
-    
+
     bzero(&localAddr, sizeof(localAddr));
     localAddr.sin_family = AF_INET;
     localAddr.sin_port = htons(PORT);
     localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    unsigned int optval;    
+    unsigned int optval;
     //设置SO_REUSEADDR选项(服务器快速重起)
     optval = 0x1;
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
@@ -159,14 +159,14 @@ int CreateTcpListenSocket()
         printf("End at: %d\n", __LINE__);
         return -1;
     }
-    
+
     if (listen(sockfd, BACKLOG) == -1)
     {
         perror("listen error");
         printf("End at: %d\n", __LINE__);
         return -1;
     }
-    
+
     return sockfd;
 }
 
@@ -181,24 +181,24 @@ int InitEpollFd()
         printf("<br/>     RLIMIT_NOFILE set FAILED: %s     <br/>", strerror(errno));
         //exit(1);
     }
-    else 
+    else
     {
         printf("设置系统资源参数成功！/n");
     }
-    
+
     //epoll descriptor
     int s_epfd;
     struct epoll_event ev;
-    
+
     listenfd = CreateTcpListenSocket();
-    
+
     if (listenfd == -1)
     {
         perror("create tcp listen socket error");
         printf("End at: %d\n", __LINE__);
         return -1;
     }
-    
+
     s_epfd = epoll_create(MAX_EPOLL_FD);
     ev.events = EPOLLIN;
     ev.data.fd = listenfd;
@@ -208,7 +208,7 @@ int InitEpollFd()
         printf("End at: %d\n",__LINE__);
         return -1;
     }
-    
+
     return s_epfd;
 }
 
@@ -219,12 +219,12 @@ void UseConnectFd(int sockfd)
     int recvNum = 0;
     int buff_size = buffer_size * 10;
     char *buff = calloc(1, buff_size);
-    
+
     while(1){
         //memset(recvBuff,'/0',buffer_size);
         recvNum = recv(sockfd, recvBuff, buffer_size, MSG_DONTWAIT);
-        
-        if ( recvNum < 0) 
+
+        if ( recvNum < 0)
         {
             if (errno == ECONNRESET || errno == ETIMEDOUT) {//ETIMEDOUT可能导致SIGPIPE
                 close(sockfd);
@@ -234,7 +234,7 @@ void UseConnectFd(int sockfd)
             close(sockfd);
             break;
         }
-        
+
         //数据超过预定大小，则重新分配内存
         if(recvNum + strlen(buff) > buff_size)
         {
@@ -248,13 +248,13 @@ void UseConnectFd(int sockfd)
         //printf("%s/n",recvBuff);
 
         if(recvNum < buffer_size)
-        {   
+        {
             break;
         }
     }
 
     if(recvBuff[0] == '0') printf("%s\n", buff);
-    
+
     if(strcmp(buff, policeRequestStr) == 0)
     {
         sendMsg(sockfd, policyXML);
@@ -262,7 +262,7 @@ void UseConnectFd(int sockfd)
     {
         sendMsg(sockfd, buff);
     }
-    
+
     if (buff)
     {
         free(buff);
@@ -273,22 +273,22 @@ void UseConnectFd(int sockfd)
 
 void setnonblocking(int sock)
 {
-    int opts;   
+    int opts;
     opts = fcntl(sock, F_GETFL);
-    if(opts < 0)  
-    {   
+    if(opts < 0)
+    {
         perror("fcntl(sock,GETFL)");
         printf("End at: %d", __LINE__);
         exit(1);
     }
-    
-    opts = opts | O_NONBLOCK; 
-    if(fcntl(sock, F_SETFL, opts) < 0)  
-    {   
+
+    opts = opts | O_NONBLOCK;
+    if(fcntl(sock, F_SETFL, opts) < 0)
+    {
         perror("fcntl(sock,SETFL,opts)");
         printf("End at: %d", __LINE__);
-        exit(1);    
-    }    
+        exit(1);
+    }
 
     return;
 }
@@ -299,7 +299,7 @@ int sendMsg(int fd,char *msg)
     if(fd < 1) return 0;
     while(1)
     {
-        int l = send(fd, msg, strlen(msg) + 1, MSG_DONTWAIT); 
+        int l = send(fd, msg, strlen(msg) + 1, MSG_DONTWAIT);
 
         if(l < 0)
         {
