@@ -15,6 +15,9 @@ $applications = array(
         'Safai',
         'Other',
     ),
+    'code' => array(
+        'UTF-8 的中文字符串.',    
+    ),
 );
 
 $json = json_encode($applications);
@@ -28,4 +31,6 @@ print_r($json_obj);
 
 echo '<br />-----------------------------------------------------------------<br />';
 echo urlencode('CZ6762|2009-09-07');
+echo "\n";
+print_r(mb_get_info('all'));
 ?>

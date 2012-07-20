@@ -1,38 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <strings.h>
-#include <sys/epoll.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <time.h>
-#include <sys/time.h>
-
-#define DEBUG 1
-
-#define MAXLINE     1024 * 100
-#define OPEN_MAX    100
-#define LISTENQ     20
-#define SERV_PORT   5000
-#define INFTIM      1000
-
-#define DEFAULT_PORT 8989
-#define DEFAULT_HOST "127.0.0.1"
-#define HOSTNAME_LEN 256
-
-#define EVENTS_NUM  20
-#define EPOOL_FD    1024 * 4
-#define EPOOL_TIMEOUT 100
+#include "epoll-single.h"
 
 /**
  * gcc -g -o epoll-server epoll-single.c
  * */
 
-void setnonblocking(int sock)
+static void setnonblocking(int sock)
 {
     int opts;
 
@@ -51,7 +23,64 @@ void setnonblocking(int sock)
     }
 }
 
-int build_html(char *html_buf)
+static int daemonize(int nochdir, int noclose)
+{
+    int fd;
+
+    switch (fork()) 
+    {
+    case -1:
+        return (-1);
+    case 0:
+        break;
+    default:
+        _exit(EXIT_SUCCESS);
+    }
+
+    if (setsid() == -1)
+        return (-1);
+
+    if (nochdir == 0)
+    {
+        if(chdir("/") != 0)
+        {
+            perror("chdir");
+            return (-1);
+        }
+    }
+
+    if (noclose == 0 && (fd = open("/dev/null", O_RDWR, 0)) != -1)
+    {
+        if (dup2(fd, STDIN_FILENO) < 0)
+        {
+            perror("dup2 stdin");
+            return (-1);
+        }
+        if (dup2(fd, STDOUT_FILENO) < 0)
+        {
+            perror("dup2 stdout");
+            return (-1);
+        }
+        if (dup2(fd, STDERR_FILENO) < 0) 
+        {
+            perror("dup2 stderr");
+            return (-1);
+        }
+
+        if (fd > STDERR_FILENO) 
+        {
+            if (close(fd) < 0) 
+            {
+                perror("close");
+                return (-1);
+            }
+        }
+    }
+    
+    return (0);
+}
+
+static int build_html(char *html_buf)
 {
     int ret = 0;
     char *p = html_buf;
@@ -128,12 +157,12 @@ int main(int argc, char *argv[])
     else
     {
         portnumber = DEFAULT_PORT;
-        fprintf(stderr, "Use default portnumber: %d\a\n", DEFAULT_PORT);
+        fprintf(stdout, "Use default portnumber: %d\a\n", DEFAULT_PORT);
     }
 
     if (-1 == gethostname(local_addr, HOSTNAME_LEN))
     {
-        fprintf(stderr, "Can NOT get host name, Use default host: %s\n", DEFAULT_HOST);
+        fprintf(stdout, "Can NOT get host name, Use default host: %s\n", DEFAULT_HOST);
         snprintf(local_addr, HOSTNAME_LEN, "%s", DEFAULT_HOST);
     }
 
@@ -151,29 +180,19 @@ int main(int argc, char *argv[])
         *(html_buf + i) = p;
     }
 
-    /**
-    if ((pid = fork()) < 0)
+#if (DAEMON)
+    if (daemonize(0, 1) == -1)
     {
-        fprintf(stderr, "fork fail, End at: %d\n", __LINE__);
-        exit(-1);
+        fprintf(stderr, "failed to daemon() in order to daemonize\n");
+        exit(EXIT_FAILURE);
     }
-    */
-
-    /** parent process */
-    /**
-    if (pid)
-    {
-        fprintf(stderr, "Parent process exit, at: %d\n", __LINE__);
-        exit(0);
-    }
-    */
+#endif
 
     //生成用于处理accept的epoll专用的文件描述符
     epfd = epoll_create(EPOOL_FD);
-
     if (-1 == (listenfd = socket(AF_INET, SOCK_STREAM, 0)))
     {
-        fprintf(stderr, "Create socket if fail.\n");
+        fprintf(stdout, "Create socket if fail.\n");
         exit(1);
     }
 #ifdef DEBUG
@@ -234,12 +253,13 @@ int main(int argc, char *argv[])
 #endif
 
     maxi = 0;
-    for ( ; ; ) {
+    for ( ; ; )
+    {
         //等待epoll事件的发生
         nfds = epoll_wait(epfd, events, EVENTS_NUM, EPOOL_TIMEOUT);
 
         //处理所发生的所有事件
-        for(i = 0; i < nfds; ++i)
+        for (i = 0; i < nfds; ++i)
         {
             if(events[i].data.fd == listenfd)
             //如果新监测到一个SOCKET用户连接到了绑定的SOCKET端口，建立新的连接
@@ -254,7 +274,7 @@ int main(int argc, char *argv[])
                 setnonblocking(connfd);
 
                 snprintf(str, MAXLINE, "%s", inet_ntoa(clientaddr.sin_addr));
-                fprintf(stderr, "accapt a connection from: %s\n", str);
+                //fprintf(stdout, "accapt a connection from: %s\n", str);
 
                 //设置用于读操作的文件描述符
                 ev.data.fd = connfd;
@@ -269,7 +289,7 @@ int main(int argc, char *argv[])
             else if(events[i].events & EPOLLIN)//如果是已经连接的用户，并且收到数据，那么进行读入
             {
                 //cout << "EPOLLIN" << endl;
-                fprintf(stderr, "EPOLLIN read data\n");
+                //fprintf(stdout, "EPOLLIN read data\n");
                 if ( (sockfd = events[i].data.fd) < 0)
                     continue;
 
@@ -283,7 +303,7 @@ int main(int argc, char *argv[])
                     else
                     {
                         //std::cout<<"readline error"<<std::endl;
-                        fprintf(stderr, "readline error\n");
+                        fprintf(stdout, "readline error\n");
                     }
                 }
                 else if (n == 0)
@@ -294,7 +314,7 @@ int main(int argc, char *argv[])
 
                 line[n] = '\0';
                 //cout << "read " << line << endl;
-                fprintf(stderr, "Read: %s\n", line);
+                //fprintf(stdout, "Read: %s\n", line);
 
                 //设置用于写操作的文件描述符
                 ev.data.fd = sockfd;
@@ -319,7 +339,7 @@ int main(int argc, char *argv[])
                 {
                     write(sockfd, "\n", 1);
                 }
-                fprintf(stderr, "Send data to client.\n");
+                //fprintf(stderr, "Send data to client.\n");
 
                 close(sockfd);
 
