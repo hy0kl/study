@@ -42,7 +42,7 @@ int cut_str(const char *src, char *des, const char *charset, int length, const c
                 tn = 2;
                 n += 2;
             }
-            else if (224 <= t && t < 239)
+            else if (224 <= t && t <= 239)
             {
                 tn = 3;
                 n += 3;

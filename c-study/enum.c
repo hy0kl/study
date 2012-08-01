@@ -9,7 +9,7 @@
 
 enum weekday_t
 {
-    sun, mou, tue, wed, thu, fri, sat
+    sun, mou, tue, wed, thu, fri, sat,
 };
 
 static char weekday_str[7][16] = {

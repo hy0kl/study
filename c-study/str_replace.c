@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         snprintf(str_buff, TMP_STR_BUF_LEN, "%s", argv[1]);
     }
 
-    if (argc > 2 && 0 != argv[2][0])
+    if (argc > 2 && NULL != argv[2])
     {
         snprintf(replace, MAX_URL_LEN_EXT, "%s", argv[2]);
     }
