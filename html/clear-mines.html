@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<title>Clear Mines</title>
+<style>
+body{
+    margin: 0px;
+    padding:0px;
+    background-color: black;
+}
+#main{
+    margin: 10px;
+    width: 550px;
+    height: 550px;
+    border: 1px solid #063540;
+}
+.common_card{
+    width: 55px;
+    height:55px;
+    background-color: #2A7A8C;
+}
+<!--  2A7A8C 176273 063540 E5D9CF 403D3A -->
+</style>
+</head>
+<body>
+<div id="main">i</div>
+</body>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+var clear_mines = {
+    /** 定义全局变量 */
+    rows: 10,
+    column: 10,
+    mines_count: 11,
+    map: [],        // 雷分布
+    pre_map: [],    // 预处理
+    pick_up: [],    // 翻开的
+    mark: [],       // 标记的
+    operate_container: {},  // 用户操作
+    win: 'WIN!',
+    over: 'Game Over!',
+
+    init: function(rows, column){
+        var rows   = rows - 0 ? rows : clear_mines.rows;
+        var column = column - 0 ? column : clear_mines.column;
+        var main = $('#main');
+
+        /** 初始化数据结构 */
+        if (-1 == clear_mines.init_game(rows, column))
+        {
+            alert('Init game fail, please check it out.');
+            return false;
+        }
+
+        /** 初始化UI 界面 */
+        clear_mines.init_ui();
+    },
+
+    init_game: function(rows, column){
+        var tmp = [];
+        var i = 0;
+        for (; i < column; i++)
+        {
+            tmp[i] = 0;
+        }
+        
+        for (i = 0; i < rows; i++)
+        {
+            clear_mines.map.push(tmp);
+            clear_mines.mark.push(tmp);
+            clear_mines.pick_up.push(tmp);
+        }
+
+        /** 创建雷*/
+
+        /** 预处理 */
+
+        return 0;
+    },
+
+    bind_click: function(){
+            
+    },
+
+    check_win: function(){
+    
+    }
+};
+$(document).ready(function(){
+    clear_mines.init();
+});
+</script>
+</html>
