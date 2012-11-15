@@ -57,10 +57,24 @@ var clear_mines = {
     over: 'Game Over!',
     main: {},
 
-    init: function(rows, column, count){
-        var rows   = rows - 0 ? rows : clear_mines.rows;
-        var column = column - 0 ? column : clear_mines.column;
-        var count  = count - 0 ? count : clear_mines.mines_count;
+    init: function(arg_rows, arg_column, arg_count){
+        /** 处理参数 */
+        if ('undefined' !== typeof(arg_rows) && arg_rows - 0 > clear_mines.rows)
+        {
+            clear_mines.rows = arg_rows;
+        }
+        if ('undefined' !== typeof(arg_column) && arg_column - 0 > clear_mines.column)
+        {
+            clear_mines.column = arg_column;
+        }
+        if ('undefined' !== typeof(arg_count) && arg_count - 0 > clear_mines.mines_count)
+        {
+            clear_mines.mines_count = arg_count;
+        }
+
+        var rows   = clear_mines.rows;
+        var column = clear_mines.column;
+        var count  = clear_mines.mines_count;
         clear_mines.main = $('#main');
 
         /** 初始化数据结构 */
@@ -72,6 +86,11 @@ var clear_mines = {
 
         /** 初始化UI 界面 */
         clear_mines.init_ui(rows, column, count);
+
+        /** 启动游戏 */
+        setTimeout(function(){
+            clear_mines.bind_event();
+        }, 100);
     },
 
     init_game: function(rows, column, count){
@@ -178,7 +197,7 @@ var clear_mines = {
         clear_mines.main.html(html);
     },
 
-    bind_click: function(){
+    bind_event: function(){
 
     },
 
@@ -186,6 +205,13 @@ var clear_mines = {
 
     check_win: function(){
 
+    },
+
+    game_win: function(){
+              
+    },
+
+    game_over: function(){
     }
 };
 
@@ -193,7 +219,7 @@ var util = {
     get_obj_count: function(obj){
         var obj = obj || {};
         var count = 0;
-        if ('object' !==typeof(obj))
+        if ('object' !== typeof(obj))
         {
             return count;
         }
