@@ -35,6 +35,10 @@ body{
 .mark{
     background-color: #403D3A;
 }
+.red_word{
+    color: red;
+    font-weight: bold;
+}
 <!--  2A7A8C 176273 063540 E5D9CF 403D3A -->
 </style>
 </head>
@@ -90,6 +94,8 @@ var clear_mines = {
         /** 启动游戏 */
         setTimeout(function(){
             clear_mines.bind_event();
+            //clear_mines.game_over();
+            //clear_mines.game_win();
         }, 100);
     },
 
@@ -198,20 +204,60 @@ var clear_mines = {
     },
 
     bind_event: function(){
+        $('.common_card').mousedown(function(ev){
+            switch (ev.which - 0)
+            {
+                case 1: // left
+                    clear_mines.turn_card_event();
+                    break;
 
+                case 3: // right
+                    clear_mines.mark_card_event();
+                    break;
+            }
+
+            clear_mines.check_win();
+            return false;
+        });
     },
 
-    clean_event: function(){},
+    turn_card_event: function(){
+        alert('turn_card_event');
+    },
+
+    mark_card_event: function(){
+        alert('mark_card_event');
+    },
+
+    clean_event: function(){
+        $('.common_card').unbind('click');
+    },
 
     check_win: function(){
-
+        alert('check_win');
     },
 
     game_win: function(){
-              
+        clear_mines._print_msg(clear_mines.win);
     },
 
     game_over: function(){
+        clear_mines._print_msg(clear_mines.over);
+    },
+
+    _print_msg: function(msg){
+        clear_mines.clean_event();
+        var msg_len = msg.length;
+        var rows    = Math.floor(clear_mines.rows / 2);
+        var column  = Math.floor(clear_mines.column / 2) - Math.floor(msg_len / 2);
+        column = column >=0 ? column : 0;
+
+        for (var i = 0; i < msg_len && column < clear_mines.column; i++)
+        {
+            var id = '#' + rows + '-' + column;
+            $(id).html(msg[i]).addClass('red_word');
+            column++;
+        }
     }
 };
 
@@ -232,6 +278,10 @@ var util = {
         return count;
     }
 };
+
+$(document).bind("contextmenu",function(e){
+    return false;
+});
 
 $(document).ready(function(){
     clear_mines.init();
