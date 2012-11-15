@@ -39,11 +39,37 @@ body{
     color: red;
     font-weight: bold;
 }
+
+.clean{
+    clear: both;
+}
+
+#debug{
+    display: none;
+    position: absolute;
+    border: 1px dashed red;
+    margin: 5px;
+    padding: 5px;
+    color: #E5D9CF;
+}
+.sub-obj{
+    padding: 5px;
+    margin: 5px;
+    border: 1px dashed blue;
+    position: relative;
+    top: 5px;
+    left: 5px;
+}
+.title{
+    font-weight: bold;
+    font-size: 1em;
+}
 <!--  2A7A8C 176273 063540 E5D9CF 403D3A -->
 </style>
 </head>
 <body>
-<div id="main">i</div>
+<div id="main"></div>
+<div id="debug"></div>
 </body>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript">
@@ -222,11 +248,11 @@ var clear_mines = {
     },
 
     turn_card_event: function(){
-        alert('turn_card_event');
+        debuger.pr('turn_card_event');
     },
 
     mark_card_event: function(){
-        alert('mark_card_event');
+        debuger.pr('mark_card_event');
     },
 
     clean_event: function(){
@@ -234,7 +260,7 @@ var clear_mines = {
     },
 
     check_win: function(){
-        alert('check_win');
+        debuger.pr('check_win');
     },
 
     game_win: function(){
@@ -276,6 +302,77 @@ var util = {
         }
 
         return count;
+    }
+};
+
+var debuger = {
+    _debug: function(data)
+    {
+        var html = '';
+        var title_tag = '<span class="title">';
+        var title_span= '</span>';
+
+        if ('string' == typeof(data) || 'number' == typeof(data))
+        {
+            return title_tag + 'String OR Number: ' + title_span + data + '<br />';
+        }
+        else if ('boolean' == typeof(data))
+        {
+            return title_tag + 'Boolean: ' + title_span + (data ? 'true' : 'false') + '<br />';
+        }
+        else if ('function' == typeof(data))
+        {
+            return title_tag + 'It is a function.' + title_span + '<br />';
+        }
+        else if ('object' == typeof(data))
+        {
+            if ('undefined' == typeof(data.length))
+            {
+                var key;
+                html += title_tag + 'It is a object.' + title_span + "<br />";
+                for (key in data)
+                {
+                    if ('object' == typeof(data[key]))
+                    {
+                        html += '<div class="sub-obj">' + debuger._debug(data[key]) + '</div>';
+                    }
+                    else
+                    {
+                        html += key + ': ' + data[key] + "<br />";
+                    }
+                }
+
+                return html;
+            }
+            else
+            {
+                var len = data.length;
+                var tip = title_tag + 'It is array.' + title_span + "<br />";
+                for (var i = 0; i < len; i++)
+                {
+                    if ('object' == typeof(data[i]))
+                    {
+                        html += i + ': <div class="sub-obj">' + debuger._debug(data[i]) + '</div>';
+                    }
+                    else
+                    {
+                        html += i + ': ' + data[i] + '<br />';
+                    }
+                }
+
+                return tip + html;
+            }
+        }
+        else
+        {
+            return title_tag + 'It is undefined...' + title_span;
+        }
+    },
+
+    pr: function(data)
+    {
+        var html = this._debug(data);
+        $('#debug').append(html).show();
     }
 };
 
