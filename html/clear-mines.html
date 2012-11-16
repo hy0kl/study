@@ -292,13 +292,32 @@ var clear_mines = {
     },
 
     check_win: function(){
-        debuger.pr('check_win');
+        //debuger.pr('check_win');
         /** 用户标记的雷不足时,不用遍历 */
         if (this.mark_count < this.mines_count)
         {
-            //debuger.pr('mines_count is Not enough.');
+            //debuger.pr('mines_count is Not enough.' + this.mark_count + ' | ' + this.mines_count);
             return false;
         }
+
+        var win_count = 0;
+        for (var i = 0; i < this.rows; i++)
+        {
+            for (var k = 0; k < this.column; k++)
+            {
+                if (this.map[i][k] === this.user_mark[i][k])
+                {
+                    win_count++;
+                }
+            }
+        }
+        if (win_count === this.rows * this.column)
+        {
+            this.game_win();
+        }
+        //debuger.pr('win_count' + win_count);
+
+        return true;
     },
 
     game_win: function(){
@@ -418,6 +437,7 @@ var debuger = {
     }
 };
 
+/** 屏蔽右键菜单 */
 $(document).bind("contextmenu",function(e){
     return false;
 });
