@@ -80,11 +80,13 @@ var clear_mines = {
     mines_count: 11,
     map: [],        // 雷分布
     pre_map: [],    // 预处理
-    pick_up: [],    // 翻开的
-    mark: [],       // 标记的
+    pick_up: [],    // 记录已经翻开的
+    user_mark: [],       // 记录用户标记的牌
+    mark_count: 0,  // 记录用户标记雷的个数
     operate_container: {},  // 用户操作
-    win: 'WIN!',
-    over: 'Game Over!',
+    win:   'WIN!',
+    over:  'Game Over!',
+    crash: 'CRASH!',
     main: {},
     stack: [],
 
@@ -106,7 +108,7 @@ var clear_mines = {
         var rows   = this.rows;
         var column = this.column;
         var count  = this.mines_count;
-        this.main = $('#main');
+        this.main  = $('#main');
 
         /** 初始化数据结构 */
         if (-1 == this.init_game(rows, column, count))
@@ -130,13 +132,13 @@ var clear_mines = {
         for (var i = 0; i < rows; i++)
         {
             this.map[i]     = [];
-            this.mark[i]    = [];
+            this.user_mark[i]=[];
             this.pick_up[i] = [];
 
             for (var k = 0; k < column; k++)
             {
                 this.map[i][k]     = 0;
-                this.mark[i][k]    = 0;
+                this.user_mark[i][k]=0;
                 this.pick_up[i][k] = 0;
             }
         }
@@ -232,54 +234,93 @@ var clear_mines = {
 
     bind_event: function(){
         $('.common_card').mousedown(function(ev){
+            var obj = $(this);
             switch (ev.which - 0)
             {
                 case 1: // left
-                    clear_mines.turn_card_event();
+                    clear_mines.turn_card_event(obj);
                     break;
 
                 case 3: // right
-                    clear_mines.mark_card_event();
+                    /** 只有用户触发标记雷的操作时才检测有没有胜利 */
+                    clear_mines.mark_card_event(obj);
                     break;
             }
 
-            clear_mines.check_win();
             return false;
         });
     },
 
     turn_card_event: function(){
         debuger.pr('turn_card_event');
+        this.game_win();
     },
 
-    mark_card_event: function(){
-        debuger.pr('mark_card_event');
+    mark_card_event: function(obj){
+        //debuger.pr('mark_card_event');
+        //this.game_over();
+        var stat = obj.attr('stat');
+        var id_str = obj.attr('id');
+
+        var exp_data = id_str.split('-');
+        if (2 != exp_data.length)
+        {
+            this.game_crash();
+            return false;
+        }
+
+        var rows   = exp_data[0];
+        var column = exp_data[1];
+        if (1 == (stat - 0))
+        {
+            obj.html('&nbsp;').removeClass('mark').attr('stat', 0);
+            this.user_mark[rows][column] = 0;
+            this.mark_count--;
+        }
+        else
+        {
+            obj.html('v').addClass('mark').attr('stat', 1);
+            this.user_mark[rows][column] = 1;
+            this.mark_count++;
+        }
+        //debuger.pr(id_str);
+        clear_mines.check_win();
     },
 
     clean_event: function(){
-        $('.common_card').unbind('click');
+        $('.common_card').unbind('mousedown').removeClass('hand');
     },
 
     check_win: function(){
         debuger.pr('check_win');
+        /** 用户标记的雷不足时,不用遍历 */
+        if (this.mark_count < this.mines_count)
+        {
+            //debuger.pr('mines_count is Not enough.');
+            return false;
+        }
     },
 
     game_win: function(){
-        this._print_msg(clear_mines.win);
+        this._print_msg(this.win);
     },
 
     game_over: function(){
-        this._print_msg(clear_mines.over);
+        this._print_msg(this.over);
+    },
+
+    game_crash: function(){
+        this._print_msg(this.crash);
     },
 
     _print_msg: function(msg){
         this.clean_event();
         var msg_len = msg.length;
-        var rows    = Math.floor(clear_mines.rows / 2);
-        var column  = Math.floor(clear_mines.column / 2) - Math.floor(msg_len / 2);
+        var rows    = Math.floor(this.rows / 2);
+        var column  = Math.floor(this.column / 2) - Math.floor(msg_len / 2);
         column = column >=0 ? column : 0;
 
-        for (var i = 0; i < msg_len && column < clear_mines.column; i++)
+        for (var i = 0; i < msg_len && column < this.column; i++)
         {
             var id = '#' + rows + '-' + column;
             $(id).html(msg[i]).addClass('red_word');
