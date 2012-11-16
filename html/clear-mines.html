@@ -86,36 +86,37 @@ var clear_mines = {
     win: 'WIN!',
     over: 'Game Over!',
     main: {},
+    stack: [],
 
     init: function(arg_rows, arg_column, arg_count){
         /** 处理参数 */
-        if ('undefined' !== typeof(arg_rows) && arg_rows - 0 > clear_mines.rows)
+        if ('undefined' !== typeof(arg_rows) && arg_rows - 0 > this.rows)
         {
-            clear_mines.rows = arg_rows;
+            this.rows = arg_rows;
         }
-        if ('undefined' !== typeof(arg_column) && arg_column - 0 > clear_mines.column)
+        if ('undefined' !== typeof(arg_column) && arg_column - 0 > this.column)
         {
-            clear_mines.column = arg_column;
+            this.column = arg_column;
         }
-        if ('undefined' !== typeof(arg_count) && arg_count - 0 > clear_mines.mines_count)
+        if ('undefined' !== typeof(arg_count) && arg_count - 0 > this.mines_count)
         {
-            clear_mines.mines_count = arg_count;
+            this.mines_count = arg_count;
         }
 
-        var rows   = clear_mines.rows;
-        var column = clear_mines.column;
-        var count  = clear_mines.mines_count;
-        clear_mines.main = $('#main');
+        var rows   = this.rows;
+        var column = this.column;
+        var count  = this.mines_count;
+        this.main = $('#main');
 
         /** 初始化数据结构 */
-        if (-1 == clear_mines.init_game(rows, column, count))
+        if (-1 == this.init_game(rows, column, count))
         {
             alert('Init game fail, please check it out.');
             return false;
         }
 
         /** 初始化UI 界面 */
-        clear_mines.init_ui(rows, column, count);
+        this.init_ui(rows, column, count);
 
         /** 启动游戏 */
         setTimeout(function(){
@@ -128,15 +129,15 @@ var clear_mines = {
     init_game: function(rows, column, count){
         for (var i = 0; i < rows; i++)
         {
-            clear_mines.map[i]     = [];
-            clear_mines.mark[i]    = [];
-            clear_mines.pick_up[i] = [];
+            this.map[i]     = [];
+            this.mark[i]    = [];
+            this.pick_up[i] = [];
 
             for (var k = 0; k < column; k++)
             {
-                clear_mines.map[i][k]     = 0;
-                clear_mines.mark[i][k]    = 0;
-                clear_mines.pick_up[i][k] = 0;
+                this.map[i][k]     = 0;
+                this.mark[i][k]    = 0;
+                this.pick_up[i][k] = 0;
             }
         }
 
@@ -152,7 +153,7 @@ var clear_mines = {
         {
             var _rows  = Math.floor(key / rows);
             var _colum = key % column;
-            clear_mines.map[_rows][_colum] = 1;
+            this.map[_rows][_colum] = 1;
             //html += _rows + ', ' + _colum + '\n';
         }
         //alert(html);
@@ -161,11 +162,11 @@ var clear_mines = {
         //var html = '';
         for (var i = 0; i < rows; i++)
         {
-            clear_mines.pre_map[i] = [];
+            this.pre_map[i] = [];
             for (var k = 0; k < column; k++)
             {
                 //html += '{'
-                clear_mines.pre_map[i][k] = [];
+                this.pre_map[i][k] = [];
                 /** i -> rows, k -> column */
                 var op_map = [
                     [-1, 0],    // up
@@ -189,18 +190,18 @@ var clear_mines = {
                     {
                         find_pos = -1;
                     }
-                    else if (clear_mines.map[find_row]
-                            && clear_mines.map[find_row][find_colum]
-                            && 1 === clear_mines.map[find_row][find_colum])
+                    else if (this.map[find_row]
+                            && this.map[find_row][find_colum]
+                            && 1 === this.map[find_row][find_colum])
                     {
                         find_pos = 1;
                         count++;
                     }
 
-                    clear_mines.pre_map[i][k][m] = find_pos;
+                    this.pre_map[i][k][m] = find_pos;
                     //html += '(' + find_row + ', ' + find_colum + '),';
                 }
-                clear_mines.pre_map[i][k][m] = count;   // 当前块周围雷的数目.
+                this.pre_map[i][k][m] = count;   // 当前块周围雷的数目.
                 //html += '}';
             }
             //html += '\n';
@@ -218,15 +219,15 @@ var clear_mines = {
             {
                 var id = i + '-' + k;
                 html += '<div class="common_card hand';
-                html += 1 === clear_mines.map[i][k] ? ' turn_card' : '';
+                html += 1 === this.map[i][k] ? ' turn_card' : '';
                 html += '" id="' + id + '">';
                 //html += '&nbsp;';
-                html += clear_mines.map[i][k];
+                html += this.map[i][k];
                 html += '</div>';
             }
         }
 
-        clear_mines.main.html(html);
+        this.main.html(html);
     },
 
     bind_event: function(){
@@ -264,15 +265,15 @@ var clear_mines = {
     },
 
     game_win: function(){
-        clear_mines._print_msg(clear_mines.win);
+        this._print_msg(clear_mines.win);
     },
 
     game_over: function(){
-        clear_mines._print_msg(clear_mines.over);
+        this._print_msg(clear_mines.over);
     },
 
     _print_msg: function(msg){
-        clear_mines.clean_event();
+        this.clean_event();
         var msg_len = msg.length;
         var rows    = Math.floor(clear_mines.rows / 2);
         var column  = Math.floor(clear_mines.column / 2) - Math.floor(msg_len / 2);
