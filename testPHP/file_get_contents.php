@@ -14,8 +14,8 @@ $url = 'http://php.weather.sina.com.cn/search.php?city=%B1%B1%BE%A9&dpc=1';
 /*$html = file_get_contents($url);
 print_r($html);*/
 
-$html = get_html($url);
-//echo $html;
+$html = get_html('http://www.baidu.com');
+echo $html;
 if ($html)
 {
     $html =  absolute_trim($html);
@@ -55,4 +55,4 @@ $opts = array(
 $context = stream_context_create($opts);
 $html = file_get_contents('http://www.example.com', false, $context);
 */
-?>
+
