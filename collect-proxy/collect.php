@@ -1,31 +1,65 @@
 <?php
-define('CHARSET', 'UTF-8');
-$config = array(
-    'proxy' => 'data/proxy',
-);
-
-$port_map = array(
-    'z' => '3',
-    'm' => '4',
-    'k' => '2',
-    'l' => '9',
-    'd' => '0',
-    'b' => '5',
-    'i' => '7',
-    'w' => '6',
-    'r' => '8',
-    'c' => '1',
-);
+include('./config.php');
 
 $api = 'http://www.cnproxy.com/proxy%d.html';
 
-for ($i = 1; $i <= 10; $i++)
+for ($ci = 1; $ci <= 10; $ci++)
 {
-    $proxy_cn_api = sprintf($api, $i);
+    $proxy_cn_api = sprintf($api, $ci);
     $html = get_html($proxy_cn_api);
     $html = mb_convert_encoding($html, CHARSET, 'GBK');
     $html = mb_strtolower($html, CHARSET);
-    echo $html;exit;
+
+    $start = 'id="proxylisttb"';
+    $s_pos = strpos($html, $start);
+
+    $end   = 'class="foot"';
+    $e_pos = strpos($html, $end);
+
+    /*
+    var_dump($s_pos);
+    var_dump($e_pos);
+    exit;
+    //echo $html; exit;
+    */
+
+    if (! ($s_pos > 0 && $e_pos > 0))
+    {
+        continue; 
+    }
+
+    $find_str = substr($html, $s_pos, $e_pos - $s_pos);
+
+    $pattern = '/<tr><td>.*?tr>/';
+    preg_match_all($pattern, $find_str, $matches);
+    //print_r($matches);
+
+    foreach ($matches[0] as $k => $table_str)
+    {   
+        $record = array();
+        $script = '<script'; 
+        $s_pos  = strpos($table_str, $script);
+        $ip     = strip_tags(substr($table_str, 0, $s_pos));
+        $record['ip'] = $ip;
+
+        $exp_data = explode('+', $table_str);
+        $exp_count= count($exp_data);
+        $port_value = array();
+        for ($i = 1; $i < $exp_count; $i++)
+        {   
+            $key = $exp_data[$i][0];
+            $port_value[] = $port_map[$key];
+        }   
+            
+        $port = implode('', $port_value) + 0;
+        $record['port'] = $port;
+
+        $log = "{$record['ip']}\t{$record['port']}\t\n";
+        file_put_contents($config['proxy'], $log, FILE_APPEND);
+        //print_r($record);
+    }
+    //echo $find_str;
+    //exit;
 }
 
 /** get basic html without post*/
@@ -47,11 +81,9 @@ function get_html($url)
     if (curl_errno($ch))
     {
         $html = '';
-    }
-    else
-    {
         echo 'Curl error: ' . curl_error($ch) . "\n";
     }
+    
     curl_close($ch);
 
     return $html;
