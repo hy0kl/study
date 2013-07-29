@@ -1,5 +1,5 @@
 <?php
-
+// from: http://blog.csdn.net/songkexin/article/details/6862897
 /*
 * 实现AES加密
 * $str : 要加密的字符串
