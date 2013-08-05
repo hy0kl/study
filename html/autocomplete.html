@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>autocomplete demo</title>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+</head>
+<body>
+ 
+<label for="autocomplete">Select a programming language: </label>
+<input id="autocomplete">
+ 
+<script>
+var cache = {};
+$( "#autocomplete" ).autocomplete({
+    source: function(request, response ) {
+        var term = request.term;
+        console.log('keyword = ' + term);
+
+        if (term in cache)
+        {
+            //console.log(cache);
+            response($.map(cache[term], function(item){
+                return [item.name];
+            }));
+            return;
+        }
+
+        $.ajax({
+            url: "/study/html/a.php",
+            dataType: "json",
+            data:{
+                keyword: request.term
+            },
+
+            success: function( data ) {
+                //console.log(data);
+                cache[term] = data;
+                response($.map(data, function(item){
+                    //console.log(item);
+                    return [item.name];
+                }));
+            }
+        });
+    },
+  
+    minLength: 1
+});
+</script>
+ 
+</body>
+</html>
