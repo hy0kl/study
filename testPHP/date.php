@@ -22,6 +22,7 @@ echo date("Y-m-d H:i:s", strtotime("+0 week Monday")), "\n";
 echo date("Y-m-d H:i:s", strtotime("+0 week Sunday")), "\n";
 echo date("Y-m-d H:i:s", strtotime("this week Monday")), "\n";
 echo date("Y-m-d H:i:s", strtotime("this week Friday")), "\n";
+echo date("Y-m-d H:i:s", strtotime("last week Friday 6pm")), "\n";
 
 
 //date('n') 第几个月
