@@ -1,0 +1,79 @@
+<html>
+<head>
+<style>
+.file_inputContainer{
+    height:256px;
+    background:url(/statics/images/upfile.png);
+    position:relative;
+    width: 256px;
+}
+.file_input{
+    height:256px;
+    overflow: hidden;
+    font-size: 300px;
+    position:absolute;
+    right:0;
+    top:0;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    cursor:pointer;
+}
+</style>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+</head>
+<body>
+<iframe style="display:none" name="async-upload"></iframe>
+<form id="upload_img" method="post" enctype="multipart/form-data" target="async-upload" action="up.php">
+    <div class="file_inputContainer">
+        <input type="hidden" name="h" value="test">
+        <input class="file_input auto-submit" type="file" name="up-img" par="upload_img" id="" />
+    </div>
+</form>
+<script>
+var async_tool = {};
+async_tool.file_size = function(field_id){
+    var file_input = $('#' + field_id)[0];
+    //console.log(file_input.files);
+    var byte_size  = file_input && file_input.files ? file_input.files[0].size : 0;
+
+    return (Math.ceil(byte_size / 1024 / 1024));
+}
+/** f 是 $(input file) 的 jQuery 对象 */
+async_tool.check_file = function(f){
+    var obj  = $(f);
+    var file = obj.val();
+    file = file.toLowerCase();
+    if (!/\.(jpg|jpeg|png)$/.test(file))
+    {
+        alert("图片类型必须是 jpeg,jpg,png 中的一种");
+        return 0;
+    }
+
+    var size = this.file_size(obj.attr('id'));
+    if (size > 2)
+    {
+        alert("亲, 上传图片的大小不可以超过 2M 哦.");
+        return 0;
+    }
+
+    return 1;
+};
+async_tool.init_auto_event = function(){
+    $('.auto-submit').change(function(){
+        var obj  = $(this);
+        var par  = obj.attr('par');
+        if (1 == async_tool.check_file(obj))
+        {
+            $('#' + par).submit();
+        }
+
+        return false;
+    });
+}
+
+$(document).ready(function(){
+    async_tool.init_auto_event();
+});
+</script>
+</body>
+</html>
