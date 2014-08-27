@@ -35,5 +35,5 @@ if(curl_errno($ch)){//出错则显示错误信息
 
 curl_close($ch); //关闭curl链接
 
-echo $response; //显示返回信息
+echo $response . PHP_EOL; //显示返回信息
 
