@@ -16,3 +16,44 @@ document.addEventListener('WeixinJSBridgeReady', function(){
     _is_weixin_browser = 1;
     console.log('当前页面在微信内嵌浏览器中打开!');
 });
+
+// 屏蔽和打开微信分享按钮
+var invoke_wx = function(invoke_func){
+    if (typeof WeixinJSBridge == "undefined")
+    {
+        if (document.addEventListener)
+        {
+            document.addEventListener('WeixinJSBridgeReady', invoke_func, false);
+        }
+        else if (document.attachEvent)
+        {
+            document.attachEvent('WeixinJSBridgeReady', invoke_func);
+            document.attachEvent('onWeixinJSBridgeReady', invoke_func);
+        }
+    }
+    else
+    {
+        invoke_func();
+    }
+}
+var switch_wx_share = {}
+switch_wx_share.opt = 'show';
+switch_wx_share.set_opt = function(opt)
+{
+    this.opt = opt;
+}
+switch_wx_share.invoke = function(){
+    var flag = 'show' == this.opt ? 'showOptionMenu' : 'hideOptionMenu';
+    WeixinJSBridge.call(flag);
+    if ('show' != opt)
+    {
+        WeixinJSBridge.call('hideToolbar');
+    }
+}
+
+switch_wx_share.set_opt('hide');
+invoke_wx(switch_wx_share.invoke);
+//setTimeout(function(
+//    switch_wx_share.set_opt('show');
+//    invoke_wx(switch_wx_share.invoke);
+//), 5000);
