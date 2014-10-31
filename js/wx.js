@@ -50,10 +50,18 @@ switch_wx_share.invoke = function(){
         WeixinJSBridge.call('hideToolbar');
     }
 }
+switch_wx_share.show = function(){
+    /** 此处不能使用 this, 在微信的回调中, this 的指向不明,会导致调用失败 */
+    switch_wx_share.set_opt('show');
+    switch_wx_share.invoke();
+}
+switch_wx_share.hide = function(){
+    switch_wx_share.set_opt('hide');
+    switch_wx_share.invoke();
+}
 
-switch_wx_share.set_opt('hide');
-invoke_wx(switch_wx_share.invoke);
-//setTimeout(function(
-//    switch_wx_share.set_opt('show');
-//    invoke_wx(switch_wx_share.invoke);
-//), 5000);
+invoke_wx(switch_wx_share.hide);
+setTimeout(function(){
+    invoke_wx(switch_wx_share.show);
+}, 5000);
+
