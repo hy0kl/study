@@ -1122,7 +1122,7 @@ function get_rand_code($long = 2)
     $max = strlen($config_code) - 1;
     for ($i = 0; $i < $long; $i++)
     {
-        $code .= $config_code[rand(0, $max)];
+        $code .= $config_code[mt_rand(0, $max)];
     }
 
     return $code;
