@@ -1103,7 +1103,8 @@ function get_next_key($needle, $haystack)
      return '';
 }
 
-$config_code = '1234567890abcdefghijkmlnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+//$config_code = '1234567890abcdefghijkmlnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+$config_code = 'abcdefhjmnpqrstuvwxy3456789ABCDEFGHJKLMNPQRSTUVWYXZ'; // 去掉容易混淆的字符
 
 /**
     get the random string.
