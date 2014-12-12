@@ -1,12 +1,12 @@
-<html>   
-<body>   
-<form action="?" id="up_file" encType="multipart/form-data" method="post">   
-    <input type="file" id="upload_file" name="upload_file">   
-    <input type="submit" value="上传文件"><span id="msg"></span>   
-    <br>   
-    <font color="red">支持JPG,JPEG,GIF,BMP,SWF,RMVB,RM,AVI文件的上传</font>                 
-</form>   
-</body>   
+<html>
+<body>
+<form action="?" id="up_file" encType="multipart/form-data" method="post">
+    <input type="file" id="upload_file" name="upload_file">
+    <input type="submit" value="上传文件"><span id="msg"></span>
+    <br>
+    <font color="red">支持JPG,JPEG,GIF,BMP,SWF,RMVB,RM,AVI文件的上传</font>
+</form>
+</body>
 </html>
 <?php
 /**
