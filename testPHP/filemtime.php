@@ -4,7 +4,9 @@
  * @author: Jerry Yang(hy0kle@gmail.com)
  * */
 
-/* vi:set ts=4 sw=4 et fdm=marker: */
 $self = './filemtime.php';
 
 echo filemtime($self) . PHP_EOL;
+
+/* vi:set ts=4 sw=4 et fdm=marker: */
+
