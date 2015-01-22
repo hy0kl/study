@@ -28,9 +28,9 @@ magenta=$'\e[1;35m'
 function show_usage()
 {
     echo "${cyan}-----USAGE----${normal}"
-    echo "$0 update             ${red}deploy latest project.${normal}"
-    echo "$0 tag ${yellow}tag-name${normal}       ${red}create deploy tag.${normal}"
-    echo "$0 rollback ${yellow}tag-name${normal}  ${red}rollback with tag name.${normal}"
+    echo "${green}$0 update             ${red}deploy latest project.${normal}"
+    echo "${green}$0 tag ${yellow}tag-name${normal}       ${red}create deploy tag.${normal}"
+    echo "${green}$0 rollback ${yellow}tag-name${normal}  ${red}rollback with tag name.${normal}"
 }
 
 if [ $# -lt 1 ];then
@@ -171,7 +171,7 @@ function update_project()
 if [ 'update' == "$opt" ]
 then
     update_project
-    create_tag "tag.$date_str"
+    #create_tag "tag.$date_str"
 elif [ 'tag' == "$opt" ]
 then
     # check tag name
