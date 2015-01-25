@@ -162,7 +162,24 @@ function update_project()
 
     # 同步文件
     # 目录不能用 " 引起来
-    rsync -a "$backup/"* "$des_path"
+
+    # {{{ rsync 参数说明
+    # -a, --archive 归档模式, 表示以递归方式传输文件, 并保持所有文件属性, 等于 -rlptgoD
+    ## -r, --recursive 对子目录以递归模式处理
+    ## -l, --links 保留软链结
+    ## -p, --perms 保持文件权限
+    ## -t, --times 保持文件时间信息
+    ## -g, --group 保持文件属组信息
+    ## -o, --owner 保持文件属主信息
+    ## -D, --devices 保持设备文件信息
+
+    # --delete 删除那些 DEST 中 SRC 没有的文件
+    # --partial 保留那些因故没有完全传输的文件, 以加快随后的再次传输
+    # --force 强制删除目录,即使不为空
+    # --ignore-errors 即使出现 IO 错误也进行删除
+    # --safe-links 忽略指向 SRC 路径目录树以外的链结
+    # }}}
+    rsync -a --delete --partial "$backup/"* "$des_path"
 
     echo "${green}deploy success.${normal}"
     return 0
