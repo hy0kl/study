@@ -8,6 +8,12 @@
  */
 
 $org_str = '中华人民共和国';
+
+if ($argc > 1 && strlen($argv[1]))
+{
+    $org_str = $argv[1];
+}
+
 $str = mb_convert_encoding($org_str, 'GBK', 'UTF-8');
 
 
