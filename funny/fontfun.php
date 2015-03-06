@@ -2,9 +2,9 @@
 /**
  * 读取汉字点阵数据
  *
- * @author    legend <legendsky@hotmail.com> 
+ * @author    legend <legendsky@hotmail.com>
  * @link      http://www.ugia.cn/?p=82
- * @Copyright www.ugia.cn  
+ * @Copyright www.ugia.cn
  */
 
 $org_str = '中华人民共和国';
@@ -32,13 +32,13 @@ for ($i = 0; $i < strlen($str); $i ++)
     }
     else
     {
-        $offset = (ord($str{$i}) + 156 - 1) * $offset_size;        
+        $offset = (ord($str{$i}) + 156 - 1) * $offset_size;
     }
-    
+
     // 读取其点阵数据
     fseek($fp, $start_offset + $offset, SEEK_SET);
     $bindot = fread($fp, $offset_size);
-    
+
     for ($j = 0; $j < $offset_size; $j ++)
     {
         // 将二进制点阵数据转化为字符串
@@ -51,19 +51,26 @@ fclose($fp);
 //echo $dot_string;
 
 $dot_len = strlen($dot_string);
+$m = 0;
 for ($k = 0; $k < $dot_len; $k++)
 {
+    $char = mb_substr($org_str, $m, 1, 'UTF-8');
     if (0 == $dot_string[$k])
     {
-        echo ' ';
+        echo '，';
     }
     else
     {
-        echo '@';
+        echo $char;
     }
 
     if (0 == ($k + 1) % 12)
     {
         echo PHP_EOL;
+    }
+
+    if (0 == ($k + 1) % (12 * 12))
+    {
+        $m++;
     }
 }
