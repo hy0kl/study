@@ -86,7 +86,7 @@ src_dir="$work_path/export-source" # svn export 的代码放在这
 # 回滚提时候将 des_path mv 为 backup,再将 last mv 为 des_path
 backup="${des_parent}/${pro_name}-0"
 last="${des_parent}/${pro_name}-1"
-date_str=$(date +'%Y-%m-%d %H:%M:%S') # 用户操作提示
+#date_str=$(date +'%Y-%m-%d %H:%M:%S') # 用户操作提示
 
 if [[ ! -d $src_dir ]]
 then
@@ -151,7 +151,6 @@ function update_project()
 
 if [ 'deploy' == "$opt" ]
 then
-    # 只上线,不创建 tag
     update_project
 elif [ 'rollback' == "$opt" ]
 then
