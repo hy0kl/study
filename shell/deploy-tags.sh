@@ -10,7 +10,14 @@ svn_url=""
 ### 待部署的目标路径,项目根目录 ###
 des_path=""
 
-VERSION="1.0 2015.04"
+VERSION="1.0.1 2015.04"
+# _     _     _
+#| |__ (_)___| |_ ___  _ __ _   _
+#| '_ \| / __| __/ _ \| '__| | | |
+#| | | | \__ \ || (_) | |  | |_| |
+#|_| |_|_|___/\__\___/|_|   \__, |
+#                           |___/
+# 1.0.1 增加自动删除部署目录最后 / 的功能
 
 # terminal color
     red=$'\e[1;31m'
@@ -70,10 +77,18 @@ then
     des_path=$2
 fi
 
+# 检查部署目录是不是存在
 if [ ! -d "$des_path" ]
 then
     echo "${red}$des_path${normal} does NOT exist, please check out it."
     exit -3
+fi
+
+# 如果目录以 / 结尾,自动删除最后的 /
+last_char=$(echo "$des_path" | awk '{print substr($0, length($0), 1)}')
+if [ "/" = "$last_char" ]
+then
+    des_path=$(echo "$des_path" | awk '{print substr($0, 1, length($0) - 1)}')
 fi
 
 # global vars
