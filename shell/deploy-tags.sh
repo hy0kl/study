@@ -34,7 +34,7 @@ function show_usage()
     echo ""
     echo "${cyan}-----USAGE----${normal}"
     echo "${blue}$0 ${green}deploy ${yellow}tags des-path           ${red}deploy project with tags.${normal}"
-    echo "${blue}$0 ${green}rollback ${yellow}des_path              ${red}rollback auto.${normal}"
+    echo "${blue}$0 ${green}rollback ${yellow}des-path              ${red}rollback auto.${normal}"
     echo ""
 }
 
