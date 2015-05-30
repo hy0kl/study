@@ -72,7 +72,7 @@ void create_json()
     //添加的另一种方式:cJSON_AddNumberToObject(data_json, "id", 1);通过源码发现仅仅是对cJSON_AddItemToObject的define
     cJSON_AddItemToObject(data_json, "id", cJSON_CreateNumber(1));
     //添加的另一种方式:cJSON_AddStringToObject(data_json, "username", "hahaya");
-    cJSON_AddItemToObject(data_json, "username", cJSON_CreateString("hahaya"));
+    cJSON_AddItemToObject(data_json, "username", cJSON_CreateString("hahaya_utf-8.中文"));
     cJSON_AddItemToObject(data_json, "userpass", cJSON_CreateString("123456"));
     cJSON_AddItemToObject(data_json, "version", cJSON_CreateString("1.0"));
     //打印JSON
