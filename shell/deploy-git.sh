@@ -6,8 +6,8 @@
 
 user="work"
 # 一组服务器列表,可以单独写文件,用 cat 读进来
-hosts_conf='192.168.190.3'
-path="/home/work/profile"
+hosts_conf='192.168.64.9'
+path="/home/work/www/demo"
 
 VERSION="1.0.0 2015.05"
 # _     _     _

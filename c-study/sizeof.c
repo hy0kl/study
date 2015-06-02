@@ -14,6 +14,9 @@ int main(int argc, char *argv[])
     int   *pi = NULL;
     float *pf = NULL;
 
+    fprintf(stderr, "sizeof(char) = %lu\n", sizeof(char));
+    fprintf(stderr, "sizeof(int) = %lu\n", sizeof(int));
+
     fprintf(stderr, "sizeof(char str_buff) = %lu\n", sizeof(str_buff));
     fprintf(stderr, "sizeof(char *p) = %lu\n", sizeof(p));
     fprintf(stderr, "sizeof(int i) = %lu\n", sizeof(i));
