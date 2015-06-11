@@ -65,6 +65,9 @@ int main(int argc, char *argv[])
     }
     END_TRY;
 
+    ConnectionPool_free(&pool);
+    URL_free(&url);
+
     return 0;
 }
 
