@@ -46,4 +46,5 @@ tags
 f
 *.dSYM
 mysql-demo
+mysql-pool
 test
