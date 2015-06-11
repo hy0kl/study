@@ -14,7 +14,7 @@
 void parse_json(const char *filename)
 {
     printf("----------------parse json start-------------------------------\n");
-    
+
     //从文件中读取要解析的JSON数据
     FILE *fp = fopen(filename, "r");
     fseek(fp, 0, SEEK_END);
@@ -58,40 +58,48 @@ void parse_json(const char *filename)
     printf("version:%s\n", version);
     free(version);
     free(data);
- 
+
     printf("----------------parse json end--------------------------------\n");
 }
 //创建JSON
 void create_json()
 {
     printf("----------------create json start-----------------------------\n");
-    //组JSON
+    // 组装JSON
     cJSON *root_json = cJSON_CreateObject();
+
     cJSON_AddItemToObject(root_json, "name", cJSON_CreateString("EVDI"));
     cJSON *data_json = cJSON_CreateObject();
     cJSON_AddItemToObject(root_json, "data", data_json);
-    //添加的另一种方式:cJSON_AddNumberToObject(data_json, "id", 1);通过源码发现仅仅是对cJSON_AddItemToObject的define
+    // 添加的另一种方式: cJSON_AddNumberToObject(data_json, "id", 1); 通过源码发现仅仅是对 cJSON_AddItemToObject 的 define
     cJSON_AddItemToObject(data_json, "id", cJSON_CreateNumber(1));
-    //添加的另一种方式:cJSON_AddStringToObject(data_json, "username", "hahaya");
+    // 添加的另一种方式: cJSON_AddStringToObject(data_json, "username", "hahaya");
     cJSON_AddItemToObject(data_json, "username", cJSON_CreateString("hahaya_utf-8.中文"));
     cJSON_AddItemToObject(data_json, "userpass", cJSON_CreateString("123456"));
     cJSON_AddItemToObject(data_json, "version", cJSON_CreateString("1.0"));
 
+    // 组装数组,数组的每个元素是对象
     cJSON *array = cJSON_CreateArray();
     cJSON_AddItemToObject(root_json, "array", array);
-
     int i = 0;
     for (i = 0; i < 10; i++) {
         cJSON *array_data = cJSON_CreateObject();
         cJSON_AddItemToArray(array, array_data);
 
         cJSON_AddItemToObject(array_data, "index", cJSON_CreateNumber(i));
-        cJSON_AddItemToObject(array_data, "rand", cJSON_CreateNumber(rand()));
+        char rand_str[32];
+        snprintf(rand_str, 32, "%d", rand());
+        cJSON_AddStringToObject(array_data, "rand", rand_str);
+        cJSON_AddNumberToObject(array_data, "bit_op", 1 << i);
     }
-    //打印JSON
+
+    // 打印JSON
     char *out = cJSON_Print(root_json);
     printf("%s\n", out);
+
     free(out);
+    cJSON_Delete(root_json);
+
     printf("----------------create json end-------------------------------\n");
 }
 
