@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 #include "cJSON.h"  //需要把该头文件放在后面包含  否则会找不到size_t
 //解析JSON
 void parse_json(const char *filename)
@@ -75,6 +76,18 @@ void create_json()
     cJSON_AddItemToObject(data_json, "username", cJSON_CreateString("hahaya_utf-8.中文"));
     cJSON_AddItemToObject(data_json, "userpass", cJSON_CreateString("123456"));
     cJSON_AddItemToObject(data_json, "version", cJSON_CreateString("1.0"));
+
+    cJSON *array = cJSON_CreateArray();
+    cJSON_AddItemToObject(root_json, "array", array);
+
+    int i = 0;
+    for (i = 0; i < 10; i++) {
+        cJSON *array_data = cJSON_CreateObject();
+        cJSON_AddItemToArray(array, array_data);
+
+        cJSON_AddItemToObject(array_data, "index", cJSON_CreateNumber(i));
+        cJSON_AddItemToObject(array_data, "rand", cJSON_CreateNumber(rand()));
+    }
     //打印JSON
     char *out = cJSON_Print(root_json);
     printf("%s\n", out);
