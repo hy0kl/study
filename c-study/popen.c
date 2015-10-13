@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     rc = pclose(fp);
     int status_child = WEXITSTATUS(rc);
 
-    if (0 == status_child) {
+    if (EXIT_SUCCESS == status_child) {
         printf("子进程执行成功! <-> ");
     } else {
         printf("子进程执行失败! <-> ");
