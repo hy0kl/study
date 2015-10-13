@@ -27,19 +27,22 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+#define LINE_BUF_LEN    1024
+#define OUTPUT_BUF_LEN  102400
+
 int main(int argc, char *argv[])
 {
     FILE *fp;
-    char line_buf[1024];
-    char buffer[10240];
+    char line_buf[LINE_BUF_LEN];
+    char output_buf[OUTPUT_BUF_LEN];
 
-    buffer[0] = '\0';
+    output_buf[0] = '\0';
     fp = popen("cd ~/ && ls -la", "r");
-    while (NULL != fgets(line_buf, sizeof(line_buf) - 1, fp)) {
-        strncat(buffer, line_buf, strlen(line_buf));
+    while (strlen(output_buf) < sizeof(output_buf) - sizeof(line_buf) && NULL != fgets(line_buf, sizeof(line_buf) - 1, fp)) {
+        strncat(output_buf, line_buf, strlen(line_buf));
     }
 
-    printf("子进程的执行结果: \n%s", buffer);
+    printf("子进程的执行结果: \n\n%s\n---end--\n", output_buf);
     pclose(fp);
 
     return 0;
