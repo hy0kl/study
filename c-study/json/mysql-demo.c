@@ -32,6 +32,17 @@
 
 #include <mysql.h>
 
+/**
+CREATE TABLE IF NOT EXISTS `oauth_access_tokens` (
+    `access_token` varchar(40) NOT NULL,
+    `client_id` varchar(80) NOT NULL,
+    `user_id` varchar(255) DEFAULT NULL,
+    `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `scope` varchar(2000) DEFAULT NULL,
+    PRIMARY KEY (`access_token`)
+) ENGINE=InnoDB DEFAULT CHARSET=uft8;
+ * */
+
 int main(int argc, char *argv[])
 {
     MYSQL *conn_ptr;
