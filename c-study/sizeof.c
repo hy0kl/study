@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 
     fprintf(stderr, "sizeof(char) = %lu\n", sizeof(char));
     fprintf(stderr, "sizeof(int) = %lu\n", sizeof(int));
+    fprintf(stderr, "sizeof(long int) = %lu\n", sizeof(long int));
 
     fprintf(stderr, "sizeof(char str_buff) = %lu\n", sizeof(str_buff));
     fprintf(stderr, "sizeof(char *p) = %lu\n", sizeof(p));

@@ -22,6 +22,7 @@ void parse_json(const char *filename)
     fseek(fp, 0, SEEK_SET);
     char *data = (char*)malloc(len + 1);
     fread(data, 1, len, fp);
+    data[len] = '\0';
     fclose(fp);
     printf("%s", data);
     //解析JSON数据
