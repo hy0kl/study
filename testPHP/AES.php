@@ -3,8 +3,9 @@
  * @describe:
  * @author: Jerry Yang(hy0kle@gmail.com)
  * */
-//$cipher_methods = openssl_get_cipher_methods();
-//print_r($cipher_methods);
+$cipher_methods = openssl_get_cipher_methods();
+print_r($cipher_methods);
+exit;
 
 $method = 'AES-256-CBC';
 

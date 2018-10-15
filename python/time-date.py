@@ -34,10 +34,10 @@ print('time.asctime(time.localtime(time.time())) = %s' % time.asctime(local_time
 print(time.asctime(utc_time))
 
 # struct_time类型的本地时间转字符串：自定义格式
-print('time.strftime(local_time): %s' % time.strftime("%Y-%m-%d, %H:%M:%S, %w", local_time))
+print('time.strftime(local_time): %s' % time.strftime("%Y-%m-%d, %H:%M:%S, %w %z", local_time))
 
 # struct_time类型的utc时间转字符串：自定义格式
-print('time.strftime(utc_time):   %s' % time.strftime("%Y-%m-%d, %H:%M:%S, %w", utc_time))
+print('time.strftime(utc_time):   %s' % time.strftime("%Y-%m-%d, %H:%M:%S, %w %z", utc_time))
 
 # 字符串转struct_time类型
 struct_time = time.strptime("2016-11-15, 15:32:12, 2", "%Y-%m-%d, %H:%M:%S, %w")
