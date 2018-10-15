@@ -44,3 +44,20 @@
 
 (add-cds)
 (dump-db)
+
+;;;
+
+(defun save-db (filename)
+  (with-open-file (out filename
+                       :direction :output
+                       :if-exists :supersede)
+    (with-standard-io-syntax
+      (print *db* out))))
+
+(save-db "./cds.db")
+
+; 加载已有库
+(defun load-db (filename)
+  (with-open-file (in filename)
+    (with-standard-io-syntax
+      (setf *db* (read in)))))
