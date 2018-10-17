@@ -88,3 +88,18 @@
         (if ripped-p (equal (getf cd :ripped-p) ripped) t))))
 
 (format t "where query, use: Dixie Chicks, result: ~a~%" (select (where :artist "Dixie Chicks")))
+
+; update
+(defun update (selector-fn &key title artist rating (ripped nil ripped-p))
+  (setf *db*
+        (mapcar
+          #'(lambda (row)
+              (when (funcall selector-fn row)
+                (if title    (setf (getf row :title) title))
+                (if artist   (setf (getf row :artist) artist))
+                (if rating   (setf (getf row :rating) rating))
+                (if ripped-p (setf (getf row :ripped) ripped)))
+              row) *db* )))
+
+(update (where :artist "Dixie Chicks") :rating 11)
+(dump-db)
