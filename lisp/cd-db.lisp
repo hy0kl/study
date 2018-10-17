@@ -61,3 +61,30 @@
   (with-open-file (in filename)
     (with-standard-io-syntax
       (setf *db* (read in)))))
+
+; query
+;; select-by-* 一堆重复代码...
+(defun select-by-artist (artist)
+  (remove-if-not
+    #'(lambda (cd) (equal (getf cd :artist) artist))
+    *db*))
+
+;; 同样存在类似代码的情况
+(defun select (selector-fn)
+  (remove-if-not selector-fn *db*))
+
+(defun artist-selector (artist)
+  #'(lambda (cd) (equal (getf cd :artist) artist)))
+
+(format t "query result: ~a~%" (select (artist-selector "Dixie Chicks")))
+
+;; 进阶函数
+(defun where (&key title artist rating (ripped nil ripped-p))
+  #'(lambda (cd)
+      (and
+        (if title    (equal (getf cd :title) title) t)
+        (if artist   (equal (getf cd :artist) artist) t)
+        (if rating   (equal (getf cd :rating) rating) t)
+        (if ripped-p (equal (getf cd :ripped-p) ripped) t))))
+
+(format t "where query, use: Dixie Chicks, result: ~a~%" (select (where :artist "Dixie Chicks")))
