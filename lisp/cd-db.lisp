@@ -103,3 +103,7 @@
 
 (update (where :artist "Dixie Chicks") :rating 11)
 (dump-db)
+
+; delete
+(defun delete-rows (selector-fn)
+  (setf *db* (remove-if selector-fn *db*)))
