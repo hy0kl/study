@@ -4,7 +4,8 @@
 
 # Nico Golde <nico(at)ngolde.de> Homepage: http://www.ngolde.de
 
-# Last change: Mon Feb 16 16:24:41 CET 2004
+# see: https://zh.wikipedia.org/zh-cn/ANSI%E8%BD%AC%E4%B9%89%E5%BA%8F%E5%88%97
+# https://www.jianshu.com/p/790fc612aaa5
 
 ############################################################
 
@@ -23,3 +24,4 @@ for attr in 0 1 4 5 7 ; do
 
     printf '\033[0m'
 done
+
